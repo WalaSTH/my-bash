@@ -18,8 +18,8 @@ int main(int argc, char *argv[]){
         show_prompt();
         pipe = parse_pipeline(parser);
         quit = parser_at_eof(parser); /* Chequeo si hay que salir luego de ejecutar el comando */
-
         if (pipe != NULL) {
+            printf("%s sd \n", pipeline_to_string(pipe));
             quit = quit || builtin_is_exit(pipe);
             execute_pipeline(pipe);
             pipeline_destroy(pipe);
