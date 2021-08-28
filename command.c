@@ -19,7 +19,7 @@ struct scommand_s {
 
 scommand scommand_new(void){
     scommand new = malloc(sizeof(struct scommand_s));
-    new->args = NULL;
+    new->args=NULL;//ESTO ES NUEVO
     new->redir_in = NULL;
     new->redir_out = NULL;
     return new;    
