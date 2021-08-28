@@ -1,5 +1,6 @@
 #include <stdio.h> 
 #include <glib.h>
+#include <assert.h>
 
 #include "command.h"
 
@@ -18,36 +19,48 @@ struct scommand_s {
 
 
 scommand scommand_new(void){
-    scommand new = malloc(sizeof(struct scommand_s));
+    
+	scommand new = malloc(sizeof(struct scommand_s));
     new->args=NULL;//ESTO ES NUEVO
     new->redir_in = NULL;
     new->redir_out = NULL;
-    return new;    
+	assert(new != NULL && scommand_is_empty (new) &&
+     		scommand_get_redir_in (new) == NULL &&
+    		scommand_get_redir_out (new) == NULL);     
+	return new;    
 }
 
 scommand scommand_destroy(scommand self){
 	if(self != NULL){
-        g_slist_free(self->args);
-        free(self->redir_in);
-        free(self->redir_out);
-    }
-    free(self);
-    self = NULL;
+		if(self->args == NULL){
+			g_slist_free(self->args);
+		}
+		if(self->redir_in == NULL){
+			free(self->redir_in);
+		}
+		if(self->redir_out == NULL){
+			free(self->redir_out);
+		}
+		free(self);    
+		self = NULL;
+	}
+	assert(self == NULL);
     return self;
 }
 
 void scommand_push_back(scommand self, char * argument){
-    if (self->args == NULL){
+	assert(self != NULL && argument!= NULL);
+    if(self->args == NULL){
         self->args = g_slist_alloc();
-        self->args = g_slist_append(self->args, argument);
-    }
-    else {
-        self->args = g_slist_append(self->args, argument);
-    }
+	}
+    self->args = g_slist_append(self->args, argument);
+	assert(!scommand_is_empty(self));
 }
 
 void scommand_pop_front(scommand self){
-    self->args = g_slist_delete_link(self->args, g_slist_nth(self->args,0));
+	assert(self != NULL);
+    self->args = g_slist_delete_link(self->args, g_slist_nth(self->args,0)); //SE DEBE PROBAR 
+	assert(!scommand_is_empty(self));
 }
 void scommand_set_redir_in(scommand self, char * filename){
     self->redir_in = filename;
@@ -58,11 +71,12 @@ void scommand_set_redir_out(scommand self, char * filename){
 }
 
 bool scommand_is_empty(const scommand self){
-    return self->args == NULL;
+    assert(self != NULL);
+	return self->args == NULL;
 }
 
 unsigned int scommand_length(const scommand self){
-    return g_slist_length(self->args);
+    return (unsigned int)g_slist_length(self->args);
 }
 
 char * scommand_front(const scommand self){
@@ -78,7 +92,7 @@ char * scommand_get_redir_out(const scommand self){
 }
 
 char * scommand_to_string(const scommand self){
-	return (char*) g_slist_nth(self->args,0); //NO ESTA COMPLETO
+	return (char*)g_slist_nth(self->args,0); //NO ESTA COMPLETO
 }
 
 
