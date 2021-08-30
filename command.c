@@ -19,6 +19,16 @@ struct scommand_s {
 };
 
 
+void main (void){
+
+	scommand c = scommand_new();
+	scommand_push_back(c, "ls");
+	scommand_push_back(c, "-l");
+	scommand_push_back(c, "/tmp");
+	char* cstr = scommand_to_string(c);
+	printf("%s", cstr);
+}
+
 scommand scommand_new(void){
     
 	scommand new = malloc(sizeof(struct scommand_s));
@@ -93,15 +103,17 @@ char * scommand_get_redir_out(const scommand self){
 }
 
 char* scommand_to_string(scommand self){
-    char* res = calloc(1,sizeof(char));
-    char** aux;
-    unsigned int n = (unsigned int)g_slist_length(self->args);
-    aux = (char**)g_slist_nth(self->args,0);
-    res = strmerge(res,*aux);
-    for(unsigned int i = 1; i < n; ++i){
-        aux = (char**)g_slist_nth(self->args,i);
-        res = strmerge(res, " ");
-        res = strmerge(res,*aux);
+	char* res = calloc(1, sizeof(char));
+    for(int i=0; i< g_slist_length(self->args); i++){
+    	if ( i != 0 ) {
+			char* resspace = strmerge(res, " ");
+			free(res);
+			res=resspace;
+    	}
+    	char* argument=(char*)g_slist_nth_data(self->args, i);
+    	char* resaux = strmerge(res, argument);
+    	free(res);
+    	res=resaux;
     }
     return res;
 }
