@@ -2,6 +2,7 @@
 #include <glib.h>
 #include <assert.h>
 
+#include "strextra.h"
 #include "command.h"
 
 
@@ -92,7 +93,6 @@ char * scommand_get_redir_out(const scommand self){
 }
 
 char* scommand_to_string(scommand self){
-    //return (char*)g_slist_nth(self->args,0); //NO ESTA COMPLETO
     char* res = calloc(1,sizeof(char));
     char** aux;
     unsigned int n = (unsigned int)g_slist_length(self->args);
@@ -172,7 +172,19 @@ bool pipeline_get_wait(const pipeline self){
 }
 
 char * pipeline_to_string(const pipeline self){
-	return scommand_to_string((scommand)g_slist_nth(self->scmds,0));
+    char* res = calloc(1,sizeof(char));;
+//    char* aux; // = calloc?
+    scommand* scom;
+    scom = (scommand*) g_slist_nth(self->scmds, 0);
+    res = scommand_to_string(*scom);
+    unsigned int n = (unsigned int)g_slist_size(self->scmds);
+/*     for (unsigned int i = 1u; i < n; ++i){
+        res = strmerge(" | ", res);
+        scom = g_slist_nth(self->scmds,i);
+        aux = scommand_to_string(scom);
+        res = strmerge(res, aux);
+    } */
+	return res;
 }
 
 
