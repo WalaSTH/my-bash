@@ -172,12 +172,12 @@ bool pipeline_get_wait(const pipeline self){
 }
 
 char * pipeline_to_string(const pipeline self){
-    char* res = calloc(1,sizeof(char));;
+    char* res = calloc(1,sizeof(char));
 //    char* aux; // = calloc?
     scommand* scom;
     scom = (scommand*) g_slist_nth(self->scmds, 0);
     res = scommand_to_string(*scom);
-    unsigned int n = (unsigned int)g_slist_size(self->scmds);
+    //unsigned int n = (unsigned int)g_slist_length(self->scmds);
 /*     for (unsigned int i = 1u; i < n; ++i){
         res = strmerge(" | ", res);
         scom = g_slist_nth(self->scmds,i);
