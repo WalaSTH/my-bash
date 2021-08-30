@@ -91,8 +91,19 @@ char * scommand_get_redir_out(const scommand self){
     return self->redir_out;
 }
 
-char * scommand_to_string(const scommand self){
-	return (char*)g_slist_nth(self->args,0); //NO ESTA COMPLETO
+char* scommand_to_string(GSList *l){
+    //return (char*)g_slist_nth(self->args,0); //NO ESTA COMPLETO
+    char* res = calloc(1,sizeof(char));
+    char** aux;
+    unsigned int n = (unsigned int)g_slist_length(l);
+    aux = (char**)g_slist_nth(l,0);
+    res = strmerge(res,*aux);
+    for(unsigned int i = 1; i < n; ++i){
+        aux = (char**)g_slist_nth(l,i);
+        res = strmerge(res, " ");
+        res = strmerge(res,*aux);
+    }
+    return res;
 }
 
 
