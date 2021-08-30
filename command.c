@@ -19,16 +19,6 @@ struct scommand_s {
 };
 
 
-void main (void){
-
-	scommand c = scommand_new();
-	scommand_push_back(c, "ls");
-	scommand_push_back(c, "-l");
-	scommand_push_back(c, "/tmp");
-	char* cstr = scommand_to_string(c);
-	printf("%s", cstr);
-}
-
 scommand scommand_new(void){
     
 	scommand new = malloc(sizeof(struct scommand_s));
@@ -61,9 +51,13 @@ scommand scommand_destroy(scommand self){
 
 void scommand_push_back(scommand self, char * argument){
 	assert(self != NULL && argument!= NULL);
-    if(self->args == NULL){
+/*
+ No corresponde, esta funcion es llamada por g_slist_append
+ https://www.freedesktop.org/software/gstreamer-sdk/data/docs/latest/glib/glib-Singly-Linked-Lists.html#g-slist-alloc
+	if(self->args == NULL){
         self->args = g_slist_alloc();
 	}
+*/
     self->args = g_slist_append(self->args, argument);
 	assert(!scommand_is_empty(self));
 }
@@ -104,7 +98,8 @@ char * scommand_get_redir_out(const scommand self){
 
 char* scommand_to_string(scommand self){
 	char* res = calloc(1, sizeof(char));
-    for(int i=0; i< g_slist_length(self->args); i++){
+	unsigned int cant = (unsigned int)g_slist_length(self->args);
+    for(unsigned int i=0; i<cant; i++){
     	if ( i != 0 ) {
 			char* resspace = strmerge(res, " ");
 			free(res);

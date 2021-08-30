@@ -7,8 +7,19 @@
 #include "builtin.h"
 #include "prompt.h"
 
-
 int main(int argc, char *argv[]){
+
+		scommand c = scommand_new();
+		scommand_push_back(c, "ls");
+		scommand_push_back(c, "-l");
+		scommand_push_back(c, "/tmp");
+		char* cstr = scommand_to_string(c);
+		printf("%s\n", cstr);
+		return 0;
+
+
+
+
     Parser parser;
     pipeline pipe;
     bool quit = false;
