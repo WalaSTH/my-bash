@@ -33,13 +33,13 @@ scommand scommand_new(void){
 
 scommand scommand_destroy(scommand self){
 	if(self != NULL){
-		if(self->args == NULL){
+		if(self->args != NULL){
 			g_slist_free(self->args);
 		}
-		if(self->redir_in == NULL){
+		if(self->redir_in != NULL){
 			free(self->redir_in);
 		}
-		if(self->redir_out == NULL){
+		if(self->redir_out != NULL){
 			free(self->redir_out);
 		}
 		free(self);    
