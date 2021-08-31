@@ -146,7 +146,6 @@ pipeline pipeline_destroy(pipeline self){
 
 void pipeline_push_back(pipeline self, scommand sc){
     if(self->scmds == NULL){
-        self->scmds = g_slist_alloc();
         self->scmds = g_slist_append(self->scmds, sc);  
     }
     else{
@@ -155,7 +154,7 @@ void pipeline_push_back(pipeline self, scommand sc){
 }
 
 void pipeline_pop_front(pipeline self){
-    self->scmds = g_slist_delete_link(self->scmds, g_slist_nth(self->scmds,0));
+    self->scmds = g_slist_delete_link(self->scmds,g_slist_nth_data(self->scmds,0));
 }
 
 void pipeline_set_wait(pipeline self, const bool w){
@@ -171,7 +170,7 @@ unsigned int pipeline_length(const pipeline self){
 }
 
 scommand pipeline_front(const pipeline self){
-	return (scommand) g_slist_nth(self->scmds,0);
+	return (scommand)g_slist_nth_data(self->scmds,0);
 }
 
 bool pipeline_get_wait(const pipeline self){
@@ -181,9 +180,9 @@ bool pipeline_get_wait(const pipeline self){
 char * pipeline_to_string(const pipeline self){
     char* res = calloc(1,sizeof(char));
 //    char* aux; // = calloc?
-    scommand* scom;
-    scom = (scommand*) g_slist_nth(self->scmds, 0);
-    res = scommand_to_string(*scom);
+    scommand scom;
+    scom = (scommand)g_slist_nth_data(self->scmds, 0);
+    res = scommand_to_string(scom);
     //unsigned int n = (unsigned int)g_slist_length(self->scmds);
 /*     for (unsigned int i = 1u; i < n; ++i){
         res = strmerge(" | ", res);
