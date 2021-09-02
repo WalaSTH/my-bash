@@ -1,0 +1,8 @@
+Dudas:
+Que significa una salida limpia? -> Duda de si hay que implementar un exit
+
+Cosas con scommands:
+Chequear/solucionar leaks
+Debug general a la estructura y las operaciones
+Los if despues de los calloc -> ver si fue exitoso un calloc
+
