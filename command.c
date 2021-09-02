@@ -85,7 +85,7 @@ unsigned int scommand_length(const scommand self){
 }
 
 char * scommand_front(const scommand self){
-    return (char*) g_slist_nth(self->args,0);
+    return (char*) g_slist_nth_data(self->args,0);
 }
 
 char * scommand_get_redir_in(const scommand self){

@@ -3,13 +3,13 @@
 
 bool builtin_is_exit(pipeline pipe){
 	scommand caux = pipeline_front(pipe); 
-	int res = strcmp(scommand_to_string(caux),"exit");
+	int res = strcmp(scommand_front(caux),"exit");
 	return res == 0;
 
 }
 bool builtin_is_cd(pipeline pipe){
 	scommand caux = pipeline_front(pipe); 
-	int res = strcmp(scommand_to_string(caux),"cd");
+	int res = strcmp(scommand_front(caux),"cd");
 	return res == 0;
 }
 
