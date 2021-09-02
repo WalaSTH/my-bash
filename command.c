@@ -63,9 +63,9 @@ void scommand_push_back(scommand self, char * argument){
 }
 
 void scommand_pop_front(scommand self){
-	assert(self != NULL);
+	assert(self != NULL && !scommand_is_empty(self));
     self->args = g_slist_delete_link(self->args, g_slist_nth(self->args,0)); //SE DEBE PROBAR 
-	assert(!scommand_is_empty(self));
+	
 }
 void scommand_set_redir_in(scommand self, char * filename){
     self->redir_in = filename;

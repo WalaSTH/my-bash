@@ -1,4 +1,6 @@
 #include <string.h>  //Calculo que respecto a esto no hay problemas (no estaba)
+#include <unistd.h>
+#include <stdio.h>
 #include "builtin.h"
 
 bool builtin_is_exit(pipeline pipe){
@@ -18,6 +20,23 @@ bool builtin_is_internal(pipeline pipe){
 }
 
 void builtin_exec(pipeline pipe){
+    if(builtin_is_cd(pipe)){
+        scommand com = pipeline_front(pipe);
+        if(!scommand_is_empty(com)){
+            scommand_pop_front(com);
+            char* path = scommand_front(com);
+            int success = chdir(path);
+            if(success == 0){
+                printf("Estas en el directorio %s\n", path);
+            }
+            else{
+                printf("No se pudo acceder al directorio.\n");
+            }
+        }
+        else{
+            printf("Ingrese un directorio\n");
+        }
+    }
 }
 
 
