@@ -24,8 +24,10 @@ void execute_pipeline(pipeline apipe){
                 printf("Comando inválido.\n");
             }
         }
-        if(pipeline_get_wait(apipe)){
-            waitpid(pid, NULL, 0);
+        else{
+            if(pipeline_get_wait(apipe)){
+                waitpid(pid, NULL, 0);
+            }
         }      
     }
 }
