@@ -154,7 +154,7 @@ void pipeline_push_back(pipeline self, scommand sc){
 }
 
 void pipeline_pop_front(pipeline self){
-    self->scmds = g_slist_delete_link(self->scmds,g_slist_nth_data(self->scmds,0));
+    self->scmds = g_slist_delete_link(self->scmds,g_slist_nth(self->scmds,0));
 }
 
 void pipeline_set_wait(pipeline self, const bool w){
@@ -179,17 +179,18 @@ bool pipeline_get_wait(const pipeline self){
 
 char * pipeline_to_string(const pipeline self){
     char* res = calloc(1,sizeof(char));
-//    char* aux; // = calloc?
     scommand scom;
     scom = (scommand)g_slist_nth_data(self->scmds, 0);
     res = scommand_to_string(scom);
-    //unsigned int n = (unsigned int)g_slist_length(self->scmds);
-/*     for (unsigned int i = 1u; i < n; ++i){
-        res = strmerge(" | ", res);
-        scom = g_slist_nth(self->scmds,i);
+     unsigned int n = (unsigned int)g_slist_length(self->scmds);
+    char* aux;
+    for (unsigned int i = 1u; i < n; ++i){
+        res = strmerge(res," | ");
+        scom = (scommand) g_slist_nth_data(self->scmds,i);
         aux = scommand_to_string(scom);
         res = strmerge(res, aux);
-    } */
+        free(aux);
+    }  
 	return res;
 }
 
