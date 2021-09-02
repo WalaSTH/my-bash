@@ -99,9 +99,10 @@ char * scommand_get_redir_out(const scommand self){
 char* scommand_to_string(scommand self){
 	char* res = calloc(1, sizeof(char));
 	unsigned int cant = (unsigned int)g_slist_length(self->args);
+    char* resspace;
     for(unsigned int i=0; i<cant; i++){
     	if ( i != 0 ) {
-			char* resspace = strmerge(res, " ");
+			resspace = strmerge(res, " ");
 			free(res);
 			res=resspace;
     	}
@@ -178,19 +179,17 @@ bool pipeline_get_wait(const pipeline self){
 }
 
 char * pipeline_to_string(const pipeline self){
-    char* res = calloc(1,sizeof(char));
-    scommand scom;
-    scom = (scommand)g_slist_nth_data(self->scmds, 0);
+    char *res, *aux;
+    scommand scom = (scommand)g_slist_nth_data(self->scmds, 0);
     res = scommand_to_string(scom);
-     unsigned int n = (unsigned int)g_slist_length(self->scmds);
-    char* aux;
+    unsigned int n = (unsigned int)g_slist_length(self->scmds);    
     for (unsigned int i = 1u; i < n; ++i){
         res = strmerge(res," | ");
         scom = (scommand) g_slist_nth_data(self->scmds,i);
         aux = scommand_to_string(scom);
         res = strmerge(res, aux);
         free(aux);
-    }  
+    }
 	return res;
 }
 
