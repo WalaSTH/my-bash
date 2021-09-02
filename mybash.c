@@ -9,16 +9,14 @@
 
 int main(int argc, char *argv[]){
 
-		scommand c = scommand_new();
+    /*		scommand c = scommand_new();
 		scommand_push_back(c, "ls");
 		scommand_push_back(c, "-l");
 		scommand_push_back(c, "/tmp");
 		char* cstr = scommand_to_string(c);
 		printf("%s\n", cstr);
 		return 0;
-
-
-
+    */
 
     Parser parser;
     pipeline pipe;
@@ -31,6 +29,9 @@ int main(int argc, char *argv[]){
         quit = parser_at_eof(parser); /* Chequeo si hay que salir luego de ejecutar el comando */
         if (pipe != NULL) {
             printf("%s \n", pipeline_to_string(pipe));
+            if(builtin_is_cd(pipe)){
+                printf("Acabas de introducir un comando cd!\n");
+            }
             quit = quit || builtin_is_exit(pipe);
             execute_pipeline(pipe);
             pipeline_destroy(pipe);

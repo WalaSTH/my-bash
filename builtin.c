@@ -1,11 +1,16 @@
+#include <string.h>  //Calculo que respecto a esto no hay problemas (no estaba)
 #include "builtin.h"
 
 bool builtin_is_exit(pipeline pipe){
-	return false;
+	scommand caux = pipeline_front(pipe); 
+	int res = strcmp(scommand_to_string(caux),"exit");
+	return res == 0;
 
 }
 bool builtin_is_cd(pipeline pipe){
-	return false;
+	scommand caux = pipeline_front(pipe); 
+	int res = strcmp(scommand_to_string(caux),"cd");
+	return res == 0;
 }
 
 bool builtin_is_internal(pipeline pipe){
