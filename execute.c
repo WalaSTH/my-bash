@@ -61,6 +61,7 @@ void execute_pipeline(pipeline apipe){
             com_array2[n] = NULL;
             execvp(com_array2[0], com_array2);
         }
+        waitpid(pid2, NULL, 0);
         close(pipeline[READ]);
         close(pipeline[WRITE]);
     }
