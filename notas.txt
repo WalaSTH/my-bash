@@ -6,3 +6,7 @@ Chequear/solucionar leaks
 Debug general a la estructura y las operaciones
 Los if despues de los calloc -> ver si fue exitoso un calloc
 
+Proximas tareas:
+Terminar lo del wait
+Terminar Las redirecciones 
+Hacer los test
