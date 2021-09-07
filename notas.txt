@@ -12,3 +12,27 @@ Proximas tareas:
 Terminar lo del wait
 Terminar Las redirecciones 
 Hacer los test
+
+
+
+--Tests de bash con cosas raras --
+wc <commandCopia.txt | wc > test 
+Entrada en el primero y salida en el segundo, anda como se esperaria
+
+cat command.c > commandCopia2.txt | wc
+el primer programa sale al archivo, y wc toma lo que da el cat que es nada, porque lee del pipe
+
+cat command.c | wc < test 
+wc solo toma el < como entrada.
+
+
+if pipe
+----
+-----
+----
+
+
+if redir in
+---
+---
+---
