@@ -74,9 +74,12 @@ void execute_pipeline(pipeline apipe){
                 //Main process
                 close(fd[0]);
                 close(fd[1]);
-                waitpid(pid1, NULL, 0);
-                if(multi){
-                    waitpid(pid2, NULL, 0);
+
+                if(pipeline_get_wait(apipe)){
+                	waitpid(pid1, NULL, 0);
+                	if(multi){
+                		waitpid(pid2, NULL, 0);
+                	}
                 }
             }
         }

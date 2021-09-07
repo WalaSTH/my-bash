@@ -28,10 +28,6 @@ int main(int argc, char *argv[]){
         pipe = parse_pipeline(parser);
         quit = parser_at_eof(parser); /* Chequeo si hay que salir luego de ejecutar el comando */
         if (pipe != NULL) {
-            printf("%s \n", pipeline_to_string(pipe));
-            if(builtin_is_cd(pipe)){
-                printf("Acabas de introducir un comando cd!\n");
-            }
             quit = quit || builtin_is_exit(pipe);
             execute_pipeline(pipe);
             pipeline_destroy(pipe);
