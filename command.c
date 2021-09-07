@@ -22,12 +22,19 @@ struct scommand_s {
 scommand scommand_new(void){
     
 	scommand new = malloc(sizeof(struct scommand_s));
-    new->args=NULL;//ESTO ES NUEVO
-    new->redir_in = NULL;
-    new->redir_out = NULL;
-	assert(new != NULL && scommand_is_empty (new) &&
-     		scommand_get_redir_in (new) == NULL &&
-    		scommand_get_redir_out (new) == NULL);     
+    if(new == NULL){
+        fprintf(stderr,"Fatal: Error to allocate %zu bytes.\n",sizeof(struct scommand_s));
+        exit(EXIT_FAILURE);
+    }
+    else{
+        new->args=NULL;//ESTO ES NUEVO
+        new->redir_in = NULL;
+        new->redir_out = NULL;
+	    assert(new != NULL && scommand_is_empty (new) &&
+         		scommand_get_redir_in (new) == NULL &&
+        		scommand_get_redir_out (new) == NULL);   
+    }
+  
 	return new;    
 }
 
@@ -51,13 +58,6 @@ scommand scommand_destroy(scommand self){
 
 void scommand_push_back(scommand self, char * argument){
 	assert(self != NULL && argument!= NULL);
-/*
- No corresponde, esta funcion es llamada por g_slist_append
- https://www.freedesktop.org/software/gstreamer-sdk/data/docs/latest/glib/glib-Singly-Linked-Lists.html#g-slist-alloc
-	if(self->args == NULL){
-        self->args = g_slist_alloc();
-	}
-*/
     self->args = g_slist_append(self->args, argument);
 	assert(!scommand_is_empty(self));
 }
@@ -97,19 +97,25 @@ char * scommand_get_redir_out(const scommand self){
 }
 
 char* scommand_to_string(scommand self){
-	char* res = calloc(1, sizeof(char));
-	unsigned int cant = (unsigned int)g_slist_length(self->args);
-    char* resspace;
-    for(unsigned int i=0; i<cant; i++){
-    	if ( i != 0 ) {
-			resspace = strmerge(res, " ");
-			free(res);
-			res=resspace;
-    	}
-    	char* argument=(char*)g_slist_nth_data(self->args, i);
-    	char* resaux = strmerge(res, argument);
-    	free(res);
-    	res=resaux;
+	char* res = calloc(1,sizeof(char));
+    if(res == NULL){
+        fprintf(stderr,"Fatal: Error to allocate %zu bytes.\n",sizeof(char));
+        exit(EXIT_FAILURE);
+    }
+    else{
+	    unsigned int cant = (unsigned int)g_slist_length(self->args);
+        char* resspace;
+        for(unsigned int i=0; i<cant; i++){
+        	if ( i != 0 ) {
+	    		resspace = strmerge(res, " ");
+	    		free(res);
+	    		res=resspace;
+        	}
+        	char* argument=(char*)g_slist_nth_data(self->args, i);
+        	char* resaux = strmerge(res, argument);
+        	free(res);
+        	res=resaux;
+        }  
     }
     return res;
 }
@@ -133,8 +139,14 @@ struct pipeline_s {
 
 pipeline pipeline_new(void){
     pipeline new = malloc(sizeof(struct pipeline_s));
-    new->scmds = NULL;
-    new->wait = true;
+    if(new == NULL){
+        fprintf(stderr,"Fatal: Error to allocate %zu bytes.\n",sizeof(struct pipeline_s));
+        exit(EXIT_FAILURE);
+    }
+    else{
+        new->scmds = NULL;
+        new->wait = true;
+    }
 	return new;
 }
 
@@ -167,7 +179,7 @@ bool pipeline_is_empty(const pipeline self){
 }
 
 unsigned int pipeline_length(const pipeline self){    
-    return g_slist_length(self->scmds);
+    return (unsigned int)g_slist_length(self->scmds);
 }
 
 scommand pipeline_front(const pipeline self){

@@ -27,13 +27,18 @@ void execute_pipeline(pipeline apipe){
         int pid1 = fork();
         if(pid1 == 0){
             //Child 1
+            close(fd[READ]);
             unsigned int n = scommand_length(scom1);
             for(unsigned int i = 0u; i < n; ++i){
                 com_arr1[i] = scommand_front(scom1);
                 scommand_pop_front(scom1);
             }
             com_arr1[n] = NULL;
-            close(fd[READ]);
+            char* fileIn =  scommand_get_redir_in(scom1);
+            if(fileIn != NULL){ //Check if we have a redir out
+                int f = open(fileIn,O_RDONLY | O_CREAT,0777);
+                dup2(f,STDIN_FILENO);
+            }            
             dup2(fd[WRITE], STDOUT_FILENO);
             close(fd[WRITE]);
             execvp(com_arr1[0], com_arr1);
@@ -42,14 +47,19 @@ void execute_pipeline(pipeline apipe){
             int pid2 = fork();
             if (pid2 == 0){
                 //Child 2
+                close(fd[WRITE]);
                 unsigned int n2 = scommand_length(scom2);
                 for(unsigned int i = 0u; i < n2; ++i){
                     com_arr2[i] = scommand_front(scom2);
                     scommand_pop_front(scom2);
                 }
                 com_arr2[n2] = NULL;
-                close(fd[WRITE]);
                 dup2(fd[READ],STDIN_FILENO);
+                char* fileOut = scommand_get_redir_out(scom2);
+                if(fileOut != NULL){ //Check if we have a redir out
+                    int f = open(fileOut,O_WRONLY | O_CREAT,0777);
+                    dup2(f,STDOUT_FILENO);
+                }
                 close(fd[READ]);
                 execvp(com_arr2[0], com_arr2);
             }
