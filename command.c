@@ -41,13 +41,16 @@ scommand scommand_new(void){
 scommand scommand_destroy(scommand self){
 	if(self != NULL){
 		if(self->args != NULL){
-			g_slist_free(self->args);
+			g_slist_free_full(self->args,free);
+            self->args = NULL;
 		}
 		if(self->redir_in != NULL){
 			free(self->redir_in);
+            self->redir_in = NULL;
 		}
 		if(self->redir_out != NULL){
 			free(self->redir_out);
+            self->redir_out = NULL;
 		}
 		free(self);    
 		self = NULL;
@@ -81,6 +84,7 @@ bool scommand_is_empty(const scommand self){
 }
 
 unsigned int scommand_length(const scommand self){
+
     return (unsigned int)g_slist_length(self->args);
 }
 
@@ -152,18 +156,15 @@ pipeline pipeline_new(void){
 
 pipeline pipeline_destroy(pipeline self){
     //self->scmds = for i = 0 to length free each scommand and then
-    g_slist_free(self->scmds);
+    g_slist_free_full(self->scmds,(GDestroyNotify)scommand_destroy);
+    //g_slist_free(self->scmds);
     free(self);
+    self = NULL;
 	return self;
 }
 
 void pipeline_push_back(pipeline self, scommand sc){
-    if(self->scmds == NULL){
-        self->scmds = g_slist_append(self->scmds, sc);  
-    }
-    else{
-        self->scmds = g_slist_append(self->scmds, sc);
-    }
+    self->scmds = g_slist_append(self->scmds, sc);  
 }
 
 void pipeline_pop_front(pipeline self){
