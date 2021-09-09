@@ -23,7 +23,7 @@ prev -> the previous pipe to read from
 last -> indicates if we are executing the last process in pipeline
 scom -> the scomand to execute
 */
-static pid_t create_child_process(int fd[], int *prev,bool last, scommand scom){
+static pid_t create_child_process(int fd[], int prev,bool last, scommand scom){
     pid_t pid = fork();
     unsigned int n = scommand_length(scom);
     char* a[100];
@@ -31,10 +31,11 @@ static pid_t create_child_process(int fd[], int *prev,bool last, scommand scom){
         printf("Error while forking sub-process\n");
     }
     else if(pid == 0){
-        if (*prev != STDIN_FILENO){ 
+        //Child process
+        if (prev != STDIN_FILENO){ 
             //Not first command case, will read from pipe
-            dup2(*prev,STDIN_FILENO);
-            close(*prev);
+            dup2(prev,STDIN_FILENO);
+            close(prev);
         }
         if(!last){
             //In the middle commands will write to pipe
@@ -45,11 +46,13 @@ static pid_t create_child_process(int fd[], int *prev,bool last, scommand scom){
         if(fileIn != NULL){ //Check if we have a redir in
             int f = open(fileIn,O_RDONLY | O_CREAT,0777);
             dup2(f,STDIN_FILENO);
+            close(f);
         }
         char* fileOut =  scommand_get_redir_out(scom);
         if(fileOut != NULL){ //Check if we have a redir out
             int f = open(fileOut,O_WRONLY | O_CREAT,0777);
             dup2(f,STDOUT_FILENO);
+            close(f);
         }
         fill_array(a,n,scom);
         int exec = execvp(a[0],a);
@@ -58,10 +61,6 @@ static pid_t create_child_process(int fd[], int *prev,bool last, scommand scom){
             _exit(1);
         }
     }
-    //closing files we don't need on parent process
-    close(*prev);
-    close(fd[WRITE]);
-    *prev = fd[READ];
     return pid;
 }
 
@@ -82,7 +81,11 @@ void execute_pipeline(pipeline apipe){
             scom = pipeline_front(apipe);
             pipeline_pop_front(apipe);
             pipe(fd);
-            pids[i] = create_child_process(fd, &prev_pipe, last, scom);
+            pids[i] = create_child_process(fd, prev_pipe, last, scom);
+            //closing files we don't need on parent process
+            close(prev_pipe);
+            close(fd[WRITE]);
+            prev_pipe = fd[READ];
         }
         //Restoring file descriptors
         prev_pipe = STDERR_FILENO;
