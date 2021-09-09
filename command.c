@@ -155,9 +155,10 @@ pipeline pipeline_new(void){
 }
 
 pipeline pipeline_destroy(pipeline self){
-    //self->scmds = for i = 0 to length free each scommand and then
-    g_slist_free_full(self->scmds,(GDestroyNotify)scommand_destroy);
-    //g_slist_free(self->scmds);
+    while(self->scmds != NULL){
+        scommand_destroy(pipeline_front(self));
+        pipeline_pop_front(self);
+    }
     free(self);
     self = NULL;
 	return self;
