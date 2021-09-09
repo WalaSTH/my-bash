@@ -1,7 +1,9 @@
 # La forma normal de usar este Makefile debería ser correr
 # "make test" EN EL DIRECTORIO DE ARRIBA, no en este.
 CPPFLAGS+= -I..
-LDFLAGS+= `pkg-config --libs check`
+LDFLAGS+= `pkg-config --libs check`  
+LDFLAGS+= `pkg-config --libs glib-2.0`
+CFLAGS+=  `pkg-config --cflags glib-2.0`
 
 TARGETS=runner runner-command leaktest
 SOURCES=$(shell echo *.c)
