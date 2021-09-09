@@ -26,10 +26,7 @@ void builtin_exec(pipeline pipe){
             scommand_pop_front(com);
             char* path = scommand_front(com);
             int success = chdir(path);
-            if(success == 0){
-                printf("Estas en el directorio %s\n", path);
-            }
-            else{
+            if(success != 0){
                 printf("No se pudo acceder al directorio.\n");
             }
         }
