@@ -4,7 +4,7 @@
 
 #include "strextra.h"
 #include "command.h"
-
+#include "tests/syscall_mock.h"
 
 /********** COMANDO SIMPLE **********/
 
@@ -75,6 +75,7 @@ void scommand_set_redir_in(scommand self, char * filename){
 }
 
 void scommand_set_redir_out(scommand self, char * filename){
+    assert(self != NULL);
     self->redir_out = filename;
 }
 
@@ -84,19 +85,26 @@ bool scommand_is_empty(const scommand self){
 }
 
 unsigned int scommand_length(const scommand self){
-
-    return (unsigned int)g_slist_length(self->args);
-}
+    assert(self != NULL );
+    unsigned int res = (unsigned int)g_slist_length(self->args);  
+    assert((res == 0) == scommand_is_empty(self));
+    return res;
+    }
 
 char * scommand_front(const scommand self){
-    return (char*) g_slist_nth_data(self->args,0);
+    assert(self != NULL && !scommand_is_empty(self));
+    char* res = (char*)g_slist_nth_data(self->args,0);
+    assert(res != NULL);
+    return res;
 }
 
 char * scommand_get_redir_in(const scommand self){
+    assert(self!=NULL);
     return self->redir_in;
 }
 
 char * scommand_get_redir_out(const scommand self){
+    assert(self!=NULL);
     return self->redir_out;
 }
 
@@ -151,6 +159,7 @@ pipeline pipeline_new(void){
         new->scmds = NULL;
         new->wait = true;
     }
+    assert(new != NULL && pipeline_is_empty(new));
 	return new;
 }
 
@@ -165,31 +174,43 @@ pipeline pipeline_destroy(pipeline self){
 }
 
 void pipeline_push_back(pipeline self, scommand sc){
-    self->scmds = g_slist_append(self->scmds, sc);  
+    assert(self != NULL && sc != NULL);
+    self->scmds = g_slist_append(self->scmds, sc); 
+    assert(!pipeline_is_empty(self)); 
 }
 
 void pipeline_pop_front(pipeline self){
+    assert(self != NULL && !pipeline_is_empty(self));
     self->scmds = g_slist_delete_link(self->scmds,g_slist_nth(self->scmds,0));
 }
 
 void pipeline_set_wait(pipeline self, const bool w){
+    assert(self != NULL);
     self->wait = w;
 }
 
 bool pipeline_is_empty(const pipeline self){
-	return self->scmds == NULL;
+	assert(self != NULL);
+    return self->scmds == NULL;
 }
 
 unsigned int pipeline_length(const pipeline self){    
-    return (unsigned int)g_slist_length(self->scmds);
-}
+    assert(self != NULL);
+    unsigned int res = (unsigned int)g_slist_length(self->scmds);
+    assert((res==0) == pipeline_is_empty(self));
+    return res; 
+    }
 
 scommand pipeline_front(const pipeline self){
-	return (scommand)g_slist_nth_data(self->scmds,0);
+	assert(self != NULL && !pipeline_is_empty(self));
+    scommand c = (scommand)g_slist_nth_data(self->scmds,0);
+    assert(c != NULL);
+    return c;
 }
 
 bool pipeline_get_wait(const pipeline self){
-	return self->wait;
+	assert(self != NULL);
+    return self->wait;
 }
 
 char * pipeline_to_string(const pipeline self){
