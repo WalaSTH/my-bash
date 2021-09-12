@@ -116,25 +116,16 @@ char * scommand_get_redir_out(const scommand self){
 }
 
 char* scommand_to_string(scommand self){
-	char* res = calloc(1,sizeof(char));
-    if(res == NULL){
-        fprintf(stderr,"Fatal: Error to allocate %zu bytes.\n",sizeof(char));
-        exit(EXIT_FAILURE);
-    }
-    else{
-	    unsigned int cant = (unsigned int)g_slist_length(self->args);
-        char* resspace;
-        for(unsigned int i=0; i<cant; i++){
-        	if ( i != 0 ) {
-	    		resspace = strmerge(res, " ");
-	    		free(res);
-	    		res=resspace;
-        	}
-        	char* argument=(char*)g_slist_nth_data(self->args, i);
-        	char* resaux = strmerge(res, argument);
-        	free(res);
-        	res=resaux;
-        }  
+	char *res,*resspace,*argument,*aux;;
+	unsigned int cant = (unsigned int)g_slist_length(self->args);
+    res = strdup(scommand_front(self));
+    for(unsigned int i = 1u; i < cant; i++){
+	    resspace = strmerge(res, " ");
+	    free(res);
+        argument=(char*)g_slist_nth_data(self->args, i);
+        aux = strmerge(resspace, argument);
+        free(resspace);
+        res=aux;
     }
     return res;
 }
