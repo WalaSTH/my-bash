@@ -4,6 +4,7 @@
 #include <sys/wait.h>
 #include <assert.h>
 #include <fcntl.h>
+#include <string.h>
 #include "command.h"
 #include "execute.h"
 #include "builtin.h"
@@ -12,7 +13,9 @@
 
 static void fill_array(char* a[], unsigned int size, scommand scom){
     for(unsigned int i = 0u; i < size; ++i){
-        a[i] = scommand_front(scom);
+        char* aux;    
+        aux = strdup(scommand_front(scom));
+        a[i] =  aux;
         scommand_pop_front(scom);
     }
     a[size] = NULL;    
@@ -78,10 +81,10 @@ void execute_pipeline(pipeline apipe){
         //Executing all commands in pipeline
         for(unsigned int i = 0u; i< n_commands; ++i){
             bool last = i+1u == n_commands;
-            scom = pipeline_front(apipe);
-            pipeline_pop_front(apipe);
+            scom = pipeline_front(apipe);            
             pipe(fd);
             pids[i] = create_child_process(fd, prev_pipe, last, scom);
+            pipeline_pop_front(apipe);
             //closing files we don't need on parent process
             close(prev_pipe);
             close(fd[WRITE]);

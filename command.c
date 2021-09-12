@@ -67,21 +67,28 @@ void scommand_push_back(scommand self, char * argument){
 
 void scommand_pop_front(scommand self){
 	assert(self != NULL && !scommand_is_empty(self));
+    free((char*)g_slist_nth_data(self->args,0));
     self->args = g_slist_delete_link(self->args, g_slist_nth(self->args,0)); //SE DEBE PROBAR 
-	
 }
 void scommand_set_redir_in(scommand self, char * filename){
+    assert(self != NULL);
+    if(self->redir_in != NULL){
+        free(self->redir_in);
+    }
     self->redir_in = filename;
 }
 
 void scommand_set_redir_out(scommand self, char * filename){
     assert(self != NULL);
+    if(self->redir_out != NULL){
+        free(self->redir_out);
+    }    
     self->redir_out = filename;
 }
 
 bool scommand_is_empty(const scommand self){
     assert(self != NULL);
-	return self->args == NULL;
+	return (g_slist_length(self->args) == 0);
 }
 
 unsigned int scommand_length(const scommand self){
@@ -133,9 +140,6 @@ char* scommand_to_string(scommand self){
 }
 
 
-
-
-
 /********** COMANDO PIPELINE **********/
 
 /* Estructura correspondiente a un comando pipeline.
@@ -165,7 +169,6 @@ pipeline pipeline_new(void){
 
 pipeline pipeline_destroy(pipeline self){
     while(self->scmds != NULL){
-        scommand_destroy(pipeline_front(self));
         pipeline_pop_front(self);
     }
     free(self);
@@ -181,6 +184,7 @@ void pipeline_push_back(pipeline self, scommand sc){
 
 void pipeline_pop_front(pipeline self){
     assert(self != NULL && !pipeline_is_empty(self));
+    scommand_destroy(g_slist_nth_data(self->scmds,0));
     self->scmds = g_slist_delete_link(self->scmds,g_slist_nth(self->scmds,0));
 }
 
@@ -191,7 +195,7 @@ void pipeline_set_wait(pipeline self, const bool w){
 
 bool pipeline_is_empty(const pipeline self){
 	assert(self != NULL);
-    return self->scmds == NULL;
+    return (g_slist_length(self->scmds) == 0);
 }
 
 unsigned int pipeline_length(const pipeline self){    
@@ -217,7 +221,7 @@ char * pipeline_to_string(const pipeline self){
     char *res, *aux;
     scommand scom = (scommand)g_slist_nth_data(self->scmds, 0);
     res = scommand_to_string(scom);
-    unsigned int n = (unsigned int)g_slist_length(self->scmds);    
+    unsigned int n = (unsigned int)g_slist_length(self->scmds);   
     for (unsigned int i = 1u; i < n; ++i){
         res = strmerge(res," | ");
         scom = (scommand) g_slist_nth_data(self->scmds,i);
