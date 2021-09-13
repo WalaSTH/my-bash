@@ -120,14 +120,20 @@ char* scommand_to_string(scommand self){
 	assert(self != NULL);
     char *res = NULL,*resspace = NULL,*argument = NULL,*aux = NULL;
 	unsigned int cant = (unsigned int)g_slist_length(self->args);
-    res = strdup(scommand_front(self));
-    for(unsigned int i = 1u; i < cant; i++){
-	    resspace = strmerge(res, " ");
-	    free(res);
-        argument=(char*)g_slist_nth_data(self->args, i);
-        aux = strmerge(resspace, argument);
-        free(resspace);
-        res=aux;
+    if (scommand_is_empty(self)){
+        //Empty command
+        res = strdup("");
+    }
+    else{
+        res = strdup(scommand_front(self));
+        for(unsigned int i = 1u; i < cant; i++){
+	        resspace = strmerge(res, " ");
+	        free(res);
+            argument=(char*)g_slist_nth_data(self->args, i);
+            aux = strmerge(resspace, argument);
+            free(resspace);
+            res=aux;
+        }
     }
     argument = scommand_get_redir_out(self);
     if(argument != NULL){
@@ -136,8 +142,7 @@ char* scommand_to_string(scommand self){
         aux = strmerge(resspace,argument);
         free(resspace);
         res = aux;
-    }
-
+    
     argument = scommand_get_redir_in(self);
     if(argument != NULL){
         resspace = strmerge(res, " < ");
@@ -145,6 +150,7 @@ char* scommand_to_string(scommand self){
         aux = strmerge(resspace,argument);
         free(resspace);
         res = aux;
+    }
     }
     assert(scommand_is_empty(self) || scommand_get_redir_in(self)==NULL 
          || scommand_get_redir_out(self)==NULL || strlen(res)>0);
@@ -233,23 +239,32 @@ bool pipeline_get_wait(const pipeline self){
 
 char * pipeline_to_string(const pipeline self){
     assert(self != NULL);
-    char *res, *aux;
-    scommand scom = (scommand)g_slist_nth_data(self->scmds, 0);
-    res = scommand_to_string(scom);
-    unsigned int n = (unsigned int)g_slist_length(self->scmds);   
-    for (unsigned int i = 1u; i < n; ++i){
-        res = strmerge(res," | ");
-        scom = (scommand) g_slist_nth_data(self->scmds,i);
-        aux = scommand_to_string(scom);
-        res = strmerge(res, aux);
-        free(aux);
+    char *res, *aux, *aux2;    
+    if(pipeline_is_empty(self)){
+        res = strdup("");
     }
+    else{
+        scommand scom = (scommand)g_slist_nth_data(self->scmds, 0);
+        res = scommand_to_string(scom);
+        unsigned int n = (unsigned int)g_slist_length(self->scmds);
+        for (unsigned int i = 1u; i < n; ++i){
+            aux = strmerge(res," | ");
+            free(res);
+            res = aux;
+            scom = (scommand) g_slist_nth_data(self->scmds,i);
+            aux = scommand_to_string(scom);
+            aux2 = res;
+            res = strmerge(res, aux);
+            free(aux2);
+            free(aux);
+        }
 
-    if(pipeline_get_wait(self) == false){
-        aux = strmerge(res," &");
-        free(res);
-        res = aux;
+        if(pipeline_get_wait(self) == false){
+            aux = strmerge(res," &");
+            free(res);
+            res = aux;
 
+        }
     }
     assert(pipeline_is_empty(self) || pipeline_get_wait(self) || strlen(res) >0);
 	return res;

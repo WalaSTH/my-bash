@@ -8,6 +8,9 @@
 #include "command.h"
 #include "execute.h"
 #include "builtin.h"
+#include "syscall_mock.h"
+#include "./tests/syscall_mock.h"
+
 #define READ 0
 #define WRITE 1
 
@@ -72,10 +75,9 @@ void execute_pipeline(pipeline apipe){
     if(builtin_is_internal(apipe)){
         builtin_exec(apipe);
     }
-    else{
+    else if(!pipeline_is_empty(apipe)){
         scommand scom;
-        unsigned int n_commands = pipeline_length(apipe);
-        
+        unsigned int n_commands = pipeline_length(apipe);        
         int prev_pipe, fd[2];
         pid_t pids[100];
         prev_pipe = STDIN_FILENO;
@@ -103,6 +105,5 @@ void execute_pipeline(pipeline apipe){
                 waitpid(pids[i], NULL, 0);
             }
         }
-
     }
 }
