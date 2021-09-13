@@ -75,6 +75,7 @@ void execute_pipeline(pipeline apipe){
     else{
         scommand scom;
         unsigned int n_commands = pipeline_length(apipe);
+        
         int prev_pipe, fd[2];
         pid_t pids[100];
         prev_pipe = STDIN_FILENO;
