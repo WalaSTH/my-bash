@@ -71,37 +71,36 @@ static pid_t create_child_process(int fd[], int prev,bool last, scommand scom){
 
 void execute_pipeline(pipeline apipe){
     assert(apipe!=NULL);
-    if(builtin_is_internal(apipe)){
-        builtin_exec(apipe);
-    }
-    else if(!pipeline_is_empty(apipe)){
-        scommand scom;
-        unsigned int n_commands = pipeline_length(apipe);        
-        int prev_pipe, fd[2];
-        pid_t pids[100];
-        prev_pipe = STDIN_FILENO;
-        //Executing all commands in pipeline
-        for(unsigned int i = 0u; i< n_commands; ++i){
-            bool last = i+1u == n_commands;
-            scom = pipeline_front(apipe);            
-            pipe(fd);
-            pids[i] = create_child_process(fd, prev_pipe, last, scom);
-            pipeline_pop_front(apipe);
-            //closing files we don't need on parent process
-            close(prev_pipe);
-            close(fd[WRITE]);
-            prev_pipe = fd[READ];
+    if(!pipeline_is_empty(apipe)){
+        if(builtin_is_internal(apipe)){
+            builtin_exec(apipe);
         }
-        //Restoring file descriptors
-        prev_pipe = STDERR_FILENO;
-        dup2(prev_pipe, STDIN_FILENO);
-        //close(prev_pipe) -> Doing this will create a weird bug where on the 
-        //second run of mybash it closes ??? ask teachers
-
-        //Wait
-        if(pipeline_get_wait(apipe)){
-            for(unsigned int i = 0; i < n_commands; ++i){
-                waitpid(pids[i], NULL, 0);
+        else{
+            scommand scom;
+            unsigned int n_commands = pipeline_length(apipe);        
+            int prev_pipe, fd[2];
+            pid_t pids[100];
+            prev_pipe = STDIN_FILENO;
+            //Executing all commands in pipeline
+            for(unsigned int i = 0u; i< n_commands; ++i){
+                bool last = i+1u == n_commands;
+                scom = pipeline_front(apipe);            
+                pipe(fd);
+                pids[i] = create_child_process(fd, prev_pipe, last, scom);
+                pipeline_pop_front(apipe);
+                //closing files we don't need on parent process
+                close(prev_pipe);
+                close(fd[WRITE]);
+                prev_pipe = fd[READ];
+            }
+            //Restoring file descriptors
+            prev_pipe = STDERR_FILENO;
+            dup2(prev_pipe, STDIN_FILENO);
+            //Wait
+            if(pipeline_get_wait(apipe)){
+                for(unsigned int i = 0; i < n_commands; ++i){
+                    waitpid(pids[i], NULL, 0);
+                }
             }
         }
     }
