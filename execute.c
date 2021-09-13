@@ -8,8 +8,7 @@
 #include "command.h"
 #include "execute.h"
 #include "builtin.h"
-#include "syscall_mock.h"
-#include "./tests/syscall_mock.h"
+#include "tests/syscall_mock.h"
 
 #define READ 0
 #define WRITE 1

@@ -3,8 +3,8 @@
 #include <stdio.h>
 #include <assert.h>
 #include "builtin.h"
-#include "syscall_mock.h"
-#include "./tests/syscall_mock.h"
+#include "tests/syscall_mock.h"
+
 
 bool builtin_is_exit(pipeline pipe){
     assert(pipe != NULL);
