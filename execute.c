@@ -82,17 +82,19 @@ void execute_pipeline(pipeline apipe){
             pid_t pids[100];
             prev_pipe = STDIN_FILENO;
             if(n_commands == 1){
-            	scom = pipeline_front(apipe);
-            	pids[0] = create_child_process(fd, prev_pipe, true, scom);
-            	pipeline_pop_front(apipe);
-            	waitpid(pids[0], NULL, 0);
+                //Single command case
+                scom = pipeline_front(apipe);
+                pids[0] = create_child_process(fd, prev_pipe, true, scom);
+                pipeline_pop_front(apipe);
             }
             else{
-				//Executing all commands in pipeline
-				for(unsigned int i = 0u; i< n_commands; ++i){
-					bool last = i+1u == n_commands;
+			    //Executing all commands in pipeline
+			    for(unsigned int i = 0u; i< n_commands; ++i){
+				    bool last = i+1u == n_commands;
 					scom = pipeline_front(apipe);
-					pipe(fd);
+                    if (!last){
+                        pipe(fd);
+                    }
 					pids[i] = create_child_process(fd, prev_pipe, last, scom);
 					pipeline_pop_front(apipe);
 					//closing files we don't need on parent process
@@ -103,12 +105,12 @@ void execute_pipeline(pipeline apipe){
 				//Restoring file descriptors
 				prev_pipe = STDERR_FILENO;
 				dup2(prev_pipe, STDIN_FILENO);
-				//Wait
-				if(pipeline_get_wait(apipe)){
-					for(unsigned int i = 0; i < n_commands; ++i){
-						waitpid(pids[i], NULL, 0);
-					}
-                }
+			//Wait
+            }
+			if(pipeline_get_wait(apipe)){
+				for(unsigned int i = 0; i < n_commands; ++i){
+					waitpid(pids[i], NULL, 0);
+				}
             }
         }
     }
