@@ -44,7 +44,6 @@ static pid_t create_child_process(int fd[], int prev,bool last, scommand scom){
         }
         if(!last){
             //In the middle commands will write to pipe
-            close(fd[READ]);
             dup2(fd[WRITE],STDOUT_FILENO);
             close(fd[WRITE]);
         }
