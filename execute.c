@@ -13,7 +13,8 @@
 #define READ 0
 #define WRITE 1
 
-static void fill_array(char* a[], unsigned int size, scommand scom){
+static void fill_array(char* a[], scommand scom){
+    unsigned int size = scommand_length(scom);
     for(unsigned int i = 0u; i < size; ++i){
         char* aux;    
         aux = strdup(scommand_front(scom));
@@ -29,7 +30,6 @@ last -> indicates if we are executing the last process in pipeline
 scom -> the scomand to execute
 */
 static pid_t create_child_process(int fd[], int prev,bool last, scommand scom){
-    unsigned int n = scommand_length(scom);
     char* a[100];
     pid_t pid = fork();
     if(pid == -1){
@@ -59,7 +59,7 @@ static pid_t create_child_process(int fd[], int prev,bool last, scommand scom){
             dup2(f,STDOUT_FILENO);
             close(f);
         }
-        fill_array(a,n,scom);
+        fill_array(a,scom);
         int exec = execvp(a[0],a);
         if(exec == -1){
             printf("Error executing process '%s'\n", a[0]);
