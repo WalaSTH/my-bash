@@ -102,7 +102,7 @@ void execute_pipeline(pipeline apipe){
 					close(prev_pipe);
 					close(fd[WRITE]);
 					prev_pipe = fd[READ];
-					}
+				}
 				//Restoring file descriptors
                 dup2(stdin_save, STDIN_FILENO);
                 close(stdin_save);			
