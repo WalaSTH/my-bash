@@ -29,9 +29,9 @@ last -> indicates if we are executing the last process in pipeline
 scom -> the scomand to execute
 */
 static pid_t create_child_process(int fd[], int prev,bool last, scommand scom){
-    pid_t pid = fork();
     unsigned int n = scommand_length(scom);
     char* a[100];
+    pid_t pid = fork();
     if(pid == -1){
         printf("Error while forking sub-process\n");
     }
@@ -88,6 +88,7 @@ void execute_pipeline(pipeline apipe){
                 pipeline_pop_front(apipe);
             }
             else{
+                int stdin_save = dup(STDIN_FILENO);
 			    //Executing all commands in pipeline
 			    for(unsigned int i = 0u; i< n_commands; ++i){
 				    bool last = i+1u == n_commands;
@@ -103,10 +104,10 @@ void execute_pipeline(pipeline apipe){
 					prev_pipe = fd[READ];
 					}
 				//Restoring file descriptors
-				prev_pipe = STDERR_FILENO;
-				dup2(prev_pipe, STDIN_FILENO);
-			//Wait
+                dup2(stdin_save, STDIN_FILENO);
+                close(stdin_save);			
             }
+            //Wait
 			if(pipeline_get_wait(apipe)){
 				for(unsigned int i = 0; i < n_commands; ++i){
 					waitpid(pids[i], NULL, 0);
