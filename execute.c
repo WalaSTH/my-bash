@@ -10,6 +10,8 @@
 #include "builtin.h"
 #include "tests/syscall_mock.h"
 
+#define MAXARGS 100
+#define MAXPIPE 100
 #define READ 0
 #define WRITE 1
 
@@ -30,7 +32,7 @@ last -> indicates if we are executing the last process in pipeline
 scom -> the scomand to execute
 */
 static pid_t create_child_process(int fd[], int prev,bool last, scommand scom){
-    char* a[100];
+    char* a[MAXARGS];
     pid_t pid = fork();
     if(pid == -1){
         printf("Error while forking sub-process\n");
@@ -79,7 +81,7 @@ void execute_pipeline(pipeline apipe){
             scommand scom;
             unsigned int n_commands = pipeline_length(apipe);        
             int prev_pipe, fd[2];
-            pid_t pids[100];
+            pid_t pids[MAXPIPE];
             prev_pipe = STDIN_FILENO;
             if(n_commands == 1){
                 //Single command case
