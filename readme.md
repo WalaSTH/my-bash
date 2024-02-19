@@ -4,7 +4,7 @@ readme
 
 ### Group:
 
-Virtualized, named after the OS technique.
+Virtualized, named after the OS technique of virtualization.
 
 ### Members:
 
@@ -98,20 +98,21 @@ In this laboratory, work mainly took place in 3 files:
 
 ### command.c:
 
-- Idea general:
-  Nuestro primer objetivo en esta instancia fue programar los comandos TAD scommand, ya que fueron bases para la implementación de los TAD pipeline y el desarrollo del proyecto en su generalidad.
-  Para esto, y antes que nada, debimos familiarizarnos con la estructura de los comandos simples, para posteriormente poder estudiar y comprender, de mejor manera, las librerías externas. Una vez realizado esto, procedimos a usar la librerías de glib-2.0 para las primeras instrucciones, las dichas no nos ocasionaron mayores complicaciones. Seguimos con la implementación de las instrucciones pipelines, estas requirieron un nuevo estudio de la librerías pero similar que los anteriores TAD´s no tuvimos muchas trabas.
-- Problemas que surgieron:
+- General Idea:
+  Our first objective at this stage was to program the scommand ADT commands, as they were the basis for implementing the pipeline ADT and the overall project development.
+  To do this, first and foremost, we had to familiarize ourselves with the structure of simple commands, so that we could then study and understand the external libraries better. Once this was done, we proceeded to use the glib-2.0 libraries for the initial instructions, which did not cause us major complications. We then continued with the implementation of pipeline instructions, which required a new study of the libraries, but similar to the previous ADTs, we didn't encounter many obstacles.
 
-1.  Al principio nos costó poder hacer una buen uso de la librería externa.
-2.  En la implementación de **scommand_to_string()** nos equivocamos al usar **g_slist_nth()** para llamar al enésimo argumento del scommand
-3.  Tuvimos problemas al liberar memoria ya que optamos por la utilización de **g_slist_free_full()**
+- Problems encountered:
 
-- Soluciones que les dimos:
+1. Initially, we struggled to make good use of the external library.
+2. In the implementation of **scommand_to_string()**, we made a mistake in using **g_slist_nth()** to call the nth argument of the scommand.
+3. We had issues with memory deallocation as we opted for using **g_slist_free_full()**.
 
-1.  Hacer una buena lectura de cada una de las funciones, como también hacer un seguimiento completo de su estructura.
-2.  Usar la función **g_slist_nth_data()** y evitar la practica de casteos al nodo
-3.  Como solución decidimos ir liberando memoria de elemento a elemento con un ciclo de while
+- Solutions provided:
+
+1. We thoroughly read each of the functions and closely followed their structure.
+2. We used the **g_slist_nth_data()** function and avoided the practice of casting to the node.
+3. As a solution, we decided to free memory element by element using a while loop.
 
 ### builtin.c:
 
